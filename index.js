@@ -363,6 +363,10 @@ function evaluateAst(tree, context) {
           if (node.callee.type === 'MemberExpression') {
             object = walk(node.callee.object)
           }
+
+          if (typeof target.apply !== 'function') {
+            throw new TypeError(node.callee.name + ' is not a function')
+          }
           return checkValue(target.apply(object, args))
 
         case 'MemberExpression':

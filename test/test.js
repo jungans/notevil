@@ -8,7 +8,17 @@ test('string interpolation', function (t) {
 })
 
 test('arrow function', function (t) {
-  t.equal(run('var fn = x => x = x + 1; fn(3)'), 4)
+  t.equal(run('var f = x => x = x + 1; f(1)'), 2)
+  t.end()
+})
+
+test.only('not a function', function (t) {
+  try {
+    t.ok(run('f(1)', { f: 0 }))
+  } catch (err) {
+    t.assert(err instanceof TypeError)
+    t.assert(err.message === 'f is not a function')
+  }
   t.end()
 })
 
