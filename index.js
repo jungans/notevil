@@ -85,6 +85,7 @@ function evaluateAst(tree, context) {
           var value = getFunction(node.body, params, blockContext, node)
           return context[node.id.name] = value
 
+        case 'ArrowFunctionExpression':
         case 'FunctionExpression':
           var params = node.params.map(getName)
 
@@ -523,6 +524,8 @@ function getFunction(body, params, parentContext, traceNode) {
 
       if (result instanceof ReturnValue) {
         return result.value
+      } else if (traceNode.type === 'ArrowFunctionExpression') {
+        return result
       }
     } catch (ex) {
       ex.trace = ex.trace || []

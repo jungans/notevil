@@ -7,6 +7,11 @@ test('string interpolation', function (t) {
   t.end()
 })
 
+test('arrow function', function (t) {
+  t.equal(run('var fn = x => x = x + 1; fn(3)'), 4)
+  t.end()
+})
+
 test('number math', function (t) {
   t.equal(run('1+2+3+4/2*100'), 1 + 2 + 3 + 4 / 2 * 100)
   t.end()
