@@ -57,7 +57,7 @@ test('x["f"] is not a function', function (t) {
     t.ok(run('x["f"]()', { x: { f: 0 } }))
   } catch (err) {
     t.assert(err instanceof TypeError)
-    t.equal(err.message, 'x["f"] is not a function')
+    t.equal(err.message, 'x.f is not a function')
   }
   t.end()
 })

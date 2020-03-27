@@ -568,7 +568,11 @@ function getMemberExpressionName(node) {
 }
 
 function getComputedMemberExpressionName(node) {
-  return `${getName(node.object)}[${node.property.raw}]`
+  let property = node.property.type === 'Literal'
+    ? typeof node.property.value === 'number' ? `[${node.property.raw}]` : `.${node.property.value}`
+    : unsupportedExpression(node.property)
+
+  return `${getName(node.object)}${property}`
 }
 
 // a ReturnValue struct for differentiating between expression result and return statement
