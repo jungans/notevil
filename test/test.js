@@ -42,7 +42,7 @@ test('x[0].f is not a function', function (t) {
   t.end()
 })
 
-test.only('x["y"].f is not a function', function (t) {
+test('x["y"].f is not a function', function (t) {
   try {
     t.ok(run('x["y"].f(1)', { x: { y: { f: 0 } } }))
   } catch (err) {
