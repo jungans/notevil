@@ -364,7 +364,7 @@ function evaluateAst(tree, context) {
             object = walk(node.callee.object)
           }
 
-          if (typeof target.apply !== 'function') {
+          if (typeof target !== 'function') {
             throw new TypeError(node.callee.name + ' is not a function')
           }
           return checkValue(target.apply(object, args))
