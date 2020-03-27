@@ -365,13 +365,15 @@ function evaluateAst(tree, context) {
           }
 
           if (typeof target !== 'function') {
+            let name
             if (node.callee.type === 'MemberExpression') {
-              const name = getMemberExpressionName(node.callee)
-              throw new TypeError(name + ' is not a function')
-
+              name = node.callee.computed
+                ? getComputedMemberExpressionName(node.callee)
+                : getMemberExpressionName(node.callee)
             } else {
-              throw new TypeError(node.callee.name + ' is not a function')
+              name = node.callee.name
             }
+            throw new TypeError(name + ' is not a function')
           }
           return checkValue(target.apply(object, args))
 
@@ -559,10 +561,14 @@ function getName(identifier) {
 
 function getMemberExpressionName(node) {
   if (node.object.computed) {
-    return `${getName(node.object.object)}[${node.object.property.raw}].${getName(node.property)}`
+    return getComputedMemberExpressionName(node.object) + '.' + getName(node.property)
   } else {
     return `${getName(node.object)}.${getName(node.property)}`
   }
+}
+
+function getComputedMemberExpressionName(node) {
+  return `${getName(node.object)}[${node.property.raw}]`
 }
 
 // a ReturnValue struct for differentiating between expression result and return statement

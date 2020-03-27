@@ -14,7 +14,7 @@ test('arrow function', function (t) {
 
 test('f is not a function', function (t) {
   try {
-    t.ok(run('f(1)', { f: 0 }))
+    t.ok(run('f()', { f: 0 }))
   } catch (err) {
     t.assert(err instanceof TypeError)
     t.equal(err.message, 'f is not a function')
@@ -24,7 +24,7 @@ test('f is not a function', function (t) {
 
 test('x.f is not a function', function (t) {
   try {
-    t.ok(run('x.f(1)', { x: { f: 0 } }))
+    t.ok(run('x.f()', { x: { f: 0 } }))
   } catch (err) {
     t.assert(err instanceof TypeError)
     t.equal(err.message, 'x.f is not a function')
@@ -34,7 +34,7 @@ test('x.f is not a function', function (t) {
 
 test('x[0].f is not a function', function (t) {
   try {
-    t.ok(run('x[0].f(1)', { x: [{ f: 0 }] }))
+    t.ok(run('x[0].f()', { x: [{ f: 0 }] }))
   } catch (err) {
     t.assert(err instanceof TypeError)
     t.equal(err.message, 'x[0].f is not a function')
@@ -42,12 +42,22 @@ test('x[0].f is not a function', function (t) {
   t.end()
 })
 
-test('x["y"].f is not a function', function (t) {
+test('x[0] is not a function', function (t) {
   try {
-    t.ok(run('x["y"].f(1)', { x: { y: { f: 0 } } }))
+    t.ok(run('x[0]()', { x: [0] }))
   } catch (err) {
     t.assert(err instanceof TypeError)
-    t.equal(err.message, 'x["y"].f is not a function')
+    t.equal(err.message, 'x[0] is not a function')
+  }
+  t.end()
+})
+
+test('x["f"] is not a function', function (t) {
+  try {
+    t.ok(run('x["f"]()', { x: { f: 0 } }))
+  } catch (err) {
+    t.assert(err instanceof TypeError)
+    t.equal(err.message, 'x["f"] is not a function')
   }
   t.end()
 })
