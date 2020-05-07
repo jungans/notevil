@@ -1,12 +1,12 @@
 var parse = require('esprima').parse
 var hoist = require('hoister')
 
-class NotEvilError extends Error { }
-class ReferenceError extends NotEvilError { }
-class TypeError extends NotEvilError { }
+class safeEvalError extends Error { }
+class ReferenceError extends safeEvalError { }
+class TypeError extends safeEvalError { }
 
 const Errors = {
-  NotEvilError,
+  safeEvalError,
   ReferenceError: ReferenceError,
   TypeError: TypeError,
 }
@@ -467,7 +467,7 @@ function evaluateAst(tree, context) {
 // when an unsupported expression is encountered, throw an error
 function unsupportedExpression(node) {
   console.error(node)
-  var err = new NotEvilError('Unsupported expression: ' + node.type)
+  var err = new safeEvalError('Unsupported expression: ' + node.type)
   err.node = node
   throw err
 }
