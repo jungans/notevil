@@ -1,6 +1,6 @@
 {
   "name": "argencoders-notevil",
-  "version": "2.2.4",
+  "version": "2.2.6",
   "description": "Evaluate javascript like the built-in eval() method but safely",
   "main": "index.js",
   "scripts": {

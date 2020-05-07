@@ -4,18 +4,11 @@ var hoist = require('hoister')
 class safeEvalError extends Error { }
 class ReferenceError extends safeEvalError { }
 class TypeError extends safeEvalError { }
-class UnhandledRejectionError extends safeEvalError {
-  constructor(inner) {
-    super('Ocurrió un error al procesar la expresión')
-    this.inner = inner
-  }
-}
 
 const Errors = {
   safeEvalError,
   ReferenceError,
   TypeError,
-  UnhandledRejectionError,
 }
 
 var InfiniteChecker = require('./lib/infinite-checker')
@@ -32,9 +25,16 @@ var maxIterations = 1000000
 
 // 'eval' with a controlled environment
 function safeEval(src, parentContext) {
-  var tree = prepareAst(src)
-  var context = Object.create(parentContext || {})
-  return finalValue(evaluateAst(tree, context))
+  try {
+    var tree = prepareAst(src)
+    var context = Object.create(parentContext || {})
+    return finalValue(evaluateAst(tree, context))
+  } catch (ex) {
+    if (!(ex instanceof safeEvalError)) {
+      ex = new safeEvalError(ex)
+    }
+    throw ex
+  }
 }
 
 // create a 'Function' constructor for a controlled environment
@@ -417,10 +417,6 @@ function evaluateAst(tree, context) {
           return unsupportedExpression(node)
       }
     } catch (ex) {
-      if (!(ex instanceof safeEvalError)) {
-        ex = new UnhandledRejectionError(ex)
-      }
-
       ex.trace = ex.trace || []
       ex.trace.push(node)
       throw ex
