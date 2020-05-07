@@ -4,11 +4,18 @@ var hoist = require('hoister')
 class safeEvalError extends Error { }
 class ReferenceError extends safeEvalError { }
 class TypeError extends safeEvalError { }
+class UnhandledRejectionError extends safeEvalError {
+  constructor(inner) {
+    super('Ocurrió un error al procesar la expresión')
+    this.inner = inner
+  }
+}
 
 const Errors = {
   safeEvalError,
-  ReferenceError: ReferenceError,
-  TypeError: TypeError,
+  ReferenceError,
+  TypeError,
+  UnhandledRejectionError,
 }
 
 var InfiniteChecker = require('./lib/infinite-checker')
@@ -362,7 +369,7 @@ function evaluateAst(tree, context) {
           } else if (hasProperty(blockContext, node.name, primitives)) {
             return checkValue(blockContext[node.name])
           } else {
-            throw new Errors.ReferenceError(node.name + ' is not defined')
+            throw new Errors.ReferenceError(node.name + ' no está definido')
           }
 
         case 'CallExpression':
@@ -385,7 +392,7 @@ function evaluateAst(tree, context) {
             } else {
               name = node.callee.name
             }
-            throw new Errors.TypeError(name + ' is not a function')
+            throw new Errors.TypeError(name + ' no es una función')
           }
           return checkValue(target.apply(object, args))
 
@@ -410,6 +417,10 @@ function evaluateAst(tree, context) {
           return unsupportedExpression(node)
       }
     } catch (ex) {
+      if (!(ex instanceof safeEvalError)) {
+        ex = new UnhandledRejectionError(ex)
+      }
+
       ex.trace = ex.trace || []
       ex.trace.push(node)
       throw ex
@@ -468,7 +479,7 @@ function evaluateAst(tree, context) {
 // when an unsupported expression is encountered, throw an error
 function unsupportedExpression(node) {
   console.error(node)
-  var err = new safeEvalError('Unsupported expression: ' + node.type)
+  var err = new safeEvalError('Expresión no soportada: ' + node.type)
   err.node = node
   throw err
 }
