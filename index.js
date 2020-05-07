@@ -1,6 +1,16 @@
 var parse = require('esprima').parse
 var hoist = require('hoister')
 
+class NotEvilError extends Error { }
+class ReferenceError extends NotEvilError { }
+class TypeError extends NotEvilError { }
+
+const Errors = {
+  NotEvilError,
+  ReferenceError: ReferenceError,
+  TypeError: TypeError,
+}
+
 var InfiniteChecker = require('./lib/infinite-checker')
 var Primitives = require('./lib/primitives')
 
@@ -8,6 +18,7 @@ module.exports = safeEval
 module.exports.eval = safeEval
 module.exports.FunctionFactory = FunctionFactory
 module.exports.Function = FunctionFactory()
+module.exports.Errors = Errors
 
 var maxIterations = 1000000
 
@@ -350,7 +361,7 @@ function evaluateAst(tree, context) {
           } else if (hasProperty(blockContext, node.name, primitives)) {
             return checkValue(blockContext[node.name])
           } else {
-            throw new ReferenceError(node.name + ' is not defined')
+            throw new Errors.ReferenceError(node.name + ' is not defined')
           }
 
         case 'CallExpression':
@@ -373,7 +384,7 @@ function evaluateAst(tree, context) {
             } else {
               name = node.callee.name
             }
-            throw new TypeError(name + ' is not a function')
+            throw new Errors.TypeError(name + ' is not a function')
           }
           return checkValue(target.apply(object, args))
 
@@ -456,7 +467,7 @@ function evaluateAst(tree, context) {
 // when an unsupported expression is encountered, throw an error
 function unsupportedExpression(node) {
   console.error(node)
-  var err = new Error('Unsupported expression: ' + node.type)
+  var err = new NotEvilError('Unsupported expression: ' + node.type)
   err.node = node
   throw err
 }

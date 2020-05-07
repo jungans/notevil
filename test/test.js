@@ -1,5 +1,6 @@
 var run = require('../')
 var test = require('tape')
+const Errors = run.Errors
 
 test('string interpolation', function (t) {
   var context = { foo: 'hello', bar: 'world' }
@@ -16,7 +17,7 @@ test('f is not a function', function (t) {
   try {
     t.ok(run('f()', { f: 0 }))
   } catch (err) {
-    t.assert(err instanceof TypeError)
+    t.assert(err instanceof Errors.TypeError)
     t.equal(err.message, 'f is not a function')
   }
   t.end()
@@ -26,7 +27,7 @@ test('x.f is not a function', function (t) {
   try {
     t.ok(run('x.f()', { x: { f: 0 } }))
   } catch (err) {
-    t.assert(err instanceof TypeError)
+    t.assert(err instanceof Errors.TypeError)
     t.equal(err.message, 'x.f is not a function')
   }
   t.end()
@@ -36,7 +37,7 @@ test('x[0].f is not a function', function (t) {
   try {
     t.ok(run('x[0].f()', { x: [{ f: 0 }] }))
   } catch (err) {
-    t.assert(err instanceof TypeError)
+    t.assert(err instanceof Errors.TypeError)
     t.equal(err.message, 'x[0].f is not a function')
   }
   t.end()
@@ -46,7 +47,7 @@ test('x[0] is not a function', function (t) {
   try {
     t.ok(run('x[0]()', { x: [0] }))
   } catch (err) {
-    t.assert(err instanceof TypeError)
+    t.assert(err instanceof Errors.TypeError)
     t.equal(err.message, 'x[0] is not a function')
   }
   t.end()
@@ -56,7 +57,7 @@ test('x["f"] is not a function', function (t) {
   try {
     t.ok(run('x["f"]()', { x: { f: 0 } }))
   } catch (err) {
-    t.assert(err instanceof TypeError)
+    t.assert(err instanceof Errors.TypeError)
     t.equal(err.message, 'x.f is not a function')
   }
   t.end()
@@ -253,7 +254,7 @@ test('let declaration', function (t) {
 })
 
 test('try statement', function (t) {
-  t.ok(run('var error; try{ __fail__.fail__() } catch(e) { error = e }; error') instanceof ReferenceError)
+  t.ok(run('var error; try{ __fail__.fail__() } catch(e) { error = e }; error') instanceof Errors.ReferenceError)
   t.throws(function () {
     run('var error; try{ __fail__.fail__() } catch(e) { error = e }; e')
   })
