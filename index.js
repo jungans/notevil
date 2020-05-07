@@ -18,6 +18,7 @@ module.exports = safeEval
 module.exports.eval = safeEval
 module.exports.FunctionFactory = FunctionFactory
 module.exports.Function = FunctionFactory()
+module.exports.safeEvalError = safeEvalError
 module.exports.Errors = Errors
 
 var maxIterations = 1000000
