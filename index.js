@@ -1,32 +1,38 @@
 var parse = require('esprima').parse
 var hoist = require('hoister')
 
-class safeEvalError extends Error {
+class SafeEvalError extends Error {
   constructor(err) {
-    super(err ? err.message : 'safeEvalError')
+    super(err ? err.message : 'SafeEvalError')
     this.innerError = err
   }
 }
+
+class SyntaxError extends SafeEvalError { }
+class RuntimeError extends SafeEvalError { }
 
 var InfiniteChecker = require('./lib/infinite-checker')
 var Primitives = require('./lib/primitives')
 
 module.exports = safeEval
 module.exports.eval = safeEval
+module.exports.isValid = isValid
 module.exports.FunctionFactory = FunctionFactory
 module.exports.Function = FunctionFactory()
-module.exports.safeEvalError = safeEvalError
+module.exports.SafeEvalError = SafeEvalError
+module.exports.SyntaxError = SyntaxError
+module.exports.RuntimeError = RuntimeError
 
 var maxIterations = 1000000
 
 // 'eval' with a controlled environment
 function safeEval(src, parentContext) {
+  var tree = prepareAst(src)
   try {
-    var tree = prepareAst(src)
     var context = Object.create(parentContext || {})
     return finalValue(evaluateAst(tree, context))
   } catch (err) {
-    throw new safeEvalError(err)
+    throw new RuntimeError(err)
   }
 }
 
@@ -47,9 +53,23 @@ function FunctionFactory(parentContext) {
   }
 }
 
+function isValid(src) {
+  try {
+    prepareAst(src)
+    return true
+  } catch (err) {
+    return false
+  }
+}
+
 // takes an AST or js source and returns an AST
 function prepareAst(src) {
-  var tree = (typeof src === 'string') ? parse(src, { loc: true }) : src
+  let tree
+  try {
+    tree = (typeof src === 'string') ? parse(src, { loc: true }) : src
+  } catch (err) {
+    throw new SyntaxError(err)
+  }
   return hoist(tree)
 }
 
@@ -468,7 +488,7 @@ function evaluateAst(tree, context) {
 // when an unsupported expression is encountered, throw an error
 function unsupportedExpression(node) {
   console.error(node)
-  var err = new safeEvalError('Expresión no soportada: ' + node.type)
+  var err = new SafeEvalError('Unsupported expression: ' + node.type)
   err.node = node
   throw err
 }
