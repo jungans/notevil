@@ -1,6 +1,13 @@
 var parse = require('esprima').parse
 var hoist = require('hoister')
 
+class safeEvalError extends Error {
+  constructor(err) {
+    super(err ? err.message : 'safeEvalError')
+    this.innerError = err
+  }
+}
+
 var InfiniteChecker = require('./lib/infinite-checker')
 var Primitives = require('./lib/primitives')
 
@@ -8,14 +15,19 @@ module.exports = safeEval
 module.exports.eval = safeEval
 module.exports.FunctionFactory = FunctionFactory
 module.exports.Function = FunctionFactory()
+module.exports.safeEvalError = safeEvalError
 
 var maxIterations = 1000000
 
 // 'eval' with a controlled environment
 function safeEval(src, parentContext) {
-  var tree = prepareAst(src)
-  var context = Object.create(parentContext || {})
-  return finalValue(evaluateAst(tree, context))
+  try {
+    var tree = prepareAst(src)
+    var context = Object.create(parentContext || {})
+    return finalValue(evaluateAst(tree, context))
+  } catch (err) {
+    throw new safeEvalError(err)
+  }
 }
 
 // create a 'Function' constructor for a controlled environment
