@@ -12,7 +12,7 @@ test('arrow function', function (t) {
   t.end()
 })
 
-test('f is not a function', function (t) {
+test('f should be a function', function (t) {
   try {
     t.ok(run('f()', { f: 0 }))
   } catch (err) {
@@ -22,7 +22,7 @@ test('f is not a function', function (t) {
   t.end()
 })
 
-test('x.f is not a function', function (t) {
+test('x.f should be a function', function (t) {
   try {
     t.ok(run('x.f()', { x: { f: 0 } }))
   } catch (err) {
@@ -32,7 +32,7 @@ test('x.f is not a function', function (t) {
   t.end()
 })
 
-test('x[0].f is not a function', function (t) {
+test('x[0].f should be a function', function (t) {
   try {
     t.ok(run('x[0].f()', { x: [{ f: 0 }] }))
   } catch (err) {
@@ -42,7 +42,7 @@ test('x[0].f is not a function', function (t) {
   t.end()
 })
 
-test('x[0] is not a function', function (t) {
+test('x[0] should be a function', function (t) {
   try {
     t.ok(run('x[0]()', { x: [0] }))
   } catch (err) {
@@ -52,7 +52,7 @@ test('x[0] is not a function', function (t) {
   t.end()
 })
 
-test('x["f"] is not a function', function (t) {
+test('x["f"] should be a function', function (t) {
   try {
     t.ok(run('x["f"]()', { x: { f: 0 } }))
   } catch (err) {

@@ -468,7 +468,7 @@ function evaluateAst(tree, context) {
 // when an unsupported expression is encountered, throw an error
 function unsupportedExpression(node) {
   console.error(node)
-  var err = new Error('Unsupported expression: ' + node.type)
+  var err = new safeEvalError('Expresión no soportada: ' + node.type)
   err.node = node
   throw err
 }
