@@ -16,7 +16,7 @@ var Primitives = require('./lib/primitives')
 
 module.exports = safeEval
 module.exports.eval = safeEval
-module.exports.isValid = isValid
+module.exports.prepareAst = prepareAst
 module.exports.FunctionFactory = FunctionFactory
 module.exports.Function = FunctionFactory()
 module.exports.SafeEvalError = SafeEvalError
@@ -50,15 +50,6 @@ function FunctionFactory(parentContext) {
     }
     var tree = prepareAst(src)
     return getFunction(tree, args, context)
-  }
-}
-
-function isValid(src) {
-  try {
-    prepareAst(src)
-    return true
-  } catch (err) {
-    return false
   }
 }
 
